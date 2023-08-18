@@ -3,8 +3,9 @@ package com.employee.employeeRegistration.controller;
 import com.employee.employeeRegistration.dto.EmployeeDto;
 import com.employee.employeeRegistration.mapper.EmployeeMapper;
 import com.employee.employeeRegistration.model.Employee;
-import com.employee.employeeRegistration.service.EmployeeService;
-import com.sun.istack.NotNull;
+import com.employee.employeeRegistration.service.blueprint.IEmployeeService;
+import com.employee.employeeRegistration.service.implementation.EmployeeService;
+import com.employee.employeeRegistration.util.ResponseMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,11 @@ import java.util.List;
 @RequestMapping("/auth")
 public class EmployeeController {
 
-    private EmployeeService employeeService;
+    private final IEmployeeService employeeService;
+
+    EmployeeController(IEmployeeService employeeService){
+        this.employeeService = employeeService;
+    }
 
     private EmployeeMapper employeeMapper;
 
@@ -35,14 +40,14 @@ public class EmployeeController {
     }
 
     @DeleteMapping({"/delete/{id}"})
-    public ResponseEntity<?> delete(@NotNull @PathVariable("id") Integer id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
         employeeService.delete(id);
         return ResponseEntity.ok(id);
     }
 
     @GetMapping({"/findAll"})
     public ResponseEntity<?> findAll() {
-        List<Employee> employeeList = employeeService.findAll();
+        ResponseMessage employeeList = employeeService.findAll();
         return ResponseEntity.ok(employeeList);
     }
 }
